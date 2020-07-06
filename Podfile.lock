@@ -1,0 +1,85 @@
+PODS:
+  - MaterialComponents/AnimationTiming (110.1.0)
+  - MaterialComponents/Availability (110.1.0)
+  - MaterialComponents/Buttons (110.1.0):
+    - MaterialComponents/Elevation
+    - MaterialComponents/Ink
+    - MaterialComponents/private/Math
+    - MaterialComponents/Ripple
+    - MaterialComponents/ShadowElevations
+    - MaterialComponents/ShadowLayer
+    - MaterialComponents/ShapeLibrary
+    - MaterialComponents/Shapes
+    - MaterialComponents/Typography
+    - MDFInternationalization
+    - MDFTextAccessibility
+  - MaterialComponents/Elevation (110.1.0):
+    - MaterialComponents/Availability
+    - MaterialComponents/private/Color
+    - MaterialComponents/private/Math
+  - MaterialComponents/Ink (110.1.0):
+    - MaterialComponents/Availability
+    - MaterialComponents/private/Color
+    - MaterialComponents/private/Math
+  - MaterialComponents/OverlayWindow (110.1.0):
+    - MaterialComponents/Availability
+    - MaterialComponents/private/Application
+  - MaterialComponents/private/Application (110.1.0)
+  - MaterialComponents/private/Color (110.1.0):
+    - MaterialComponents/Availability
+  - MaterialComponents/private/KeyboardWatcher (110.1.0):
+    - MaterialComponents/private/Application
+  - MaterialComponents/private/Math (110.1.0)
+  - MaterialComponents/private/Overlay (110.1.0)
+  - MaterialComponents/Ripple (110.1.0):
+    - MaterialComponents/AnimationTiming
+    - MaterialComponents/Availability
+    - MaterialComponents/private/Color
+    - MaterialComponents/private/Math
+  - MaterialComponents/ShadowElevations (110.1.0)
+  - MaterialComponents/ShadowLayer (110.1.0):
+    - MaterialComponents/ShadowElevations
+  - MaterialComponents/ShapeLibrary (110.1.0):
+    - MaterialComponents/private/Math
+    - MaterialComponents/Shapes
+  - MaterialComponents/Shapes (110.1.0):
+    - MaterialComponents/private/Color
+    - MaterialComponents/private/Math
+    - MaterialComponents/ShadowLayer
+  - MaterialComponents/Snackbar (110.1.0):
+    - MaterialComponents/AnimationTiming
+    - MaterialComponents/Availability
+    - MaterialComponents/Buttons
+    - MaterialComponents/Elevation
+    - MaterialComponents/OverlayWindow
+    - MaterialComponents/private/Application
+    - MaterialComponents/private/KeyboardWatcher
+    - MaterialComponents/private/Math
+    - MaterialComponents/private/Overlay
+    - MaterialComponents/ShadowElevations
+    - MaterialComponents/ShadowLayer
+    - MaterialComponents/Typography
+  - MaterialComponents/Typography (110.1.0):
+    - MaterialComponents/private/Application
+    - MaterialComponents/private/Math
+    - MDFTextAccessibility
+  - MDFInternationalization (2.0.0)
+  - MDFTextAccessibility (2.0.0)
+
+DEPENDENCIES:
+  - MaterialComponents/Snackbar
+
+SPEC REPOS:
+  trunk:
+    - MaterialComponents
+    - MDFInternationalization
+    - MDFTextAccessibility
+
+SPEC CHECKSUMS:
+  MaterialComponents: 4cb6659322cfc38bb0a7e40fba1866daaefeb12c
+  MDFInternationalization: 010097556d6b09d2c4ea38e0820ea6d37be6a314
+  MDFTextAccessibility: 85c09a1bd9c321f494348e632a25063bcda35a53
+
+PODFILE CHECKSUM: f2e39fb8d33a30cf3210baa62410e33613b41d06
+
+COCOAPODS: 1.9.1

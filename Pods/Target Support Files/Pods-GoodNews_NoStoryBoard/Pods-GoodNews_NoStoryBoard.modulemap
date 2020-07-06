@@ -1,0 +1,6 @@
+framework module Pods_GoodNews_NoStoryBoard {
+  umbrella header "Pods-GoodNews_NoStoryBoard-umbrella.h"
+
+  export *
+  module * { export * }
+}
