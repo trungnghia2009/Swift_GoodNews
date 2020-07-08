@@ -21,17 +21,15 @@ class SlideController: UISimpleSlidingTabController {
     private let bookmarksButton: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .white
-        button.backgroundColor = #colorLiteral(red: 0.1628837585, green: 0.1629138589, blue: 0.1866516471, alpha: 1)
+        button.backgroundColor = .systemBlue
         button.setImage(UIImage(systemName: "bookmark"), for: .normal)
+        button.setDimensions(height: 50, width: 50)
+        button.layer.cornerRadius = 25
         button.addShadow()
         button.addTarget(self, action: #selector(handleBookmarksTapped), for: .touchUpInside)
         return button
     }()
     
-    private let snackBarView: UIView = {
-        let view = UIView()
-        return view
-    }()
     
     //MARK: - Lifecycle
     override func viewDidLoad() {
@@ -47,15 +45,6 @@ class SlideController: UISimpleSlidingTabController {
         view.addSubview(bookmarksButton)
         bookmarksButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor,
                              paddingBottom: 60, paddingRight: 20)
-        bookmarksButton.setDimensions(height: 50, width: 50)
-        bookmarksButton.layer.cornerRadius = 25
-        
-        view.addSubview(snackBarView)
-        snackBarView.setDimensions(height: 200, width: view.frame.width)
-        snackBarView.backgroundColor = .red
-        snackBarView.alpha = 0
-        snackBarView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, right: view.safeAreaLayoutGuide.rightAnchor,
-                            paddingTop: 40)
         
         print("Subview...")
     }
@@ -103,6 +92,16 @@ class SlideController: UISimpleSlidingTabController {
         setCurrentPosition(position: 0)
     }
     
+    private func showSnackBarMessage() {
+        let message = MDCSnackbarMessage()
+        message.text = "Added the article to Bookmark"
+        
+        let action = MDCSnackbarMessageAction()
+        action.title = "OK"
+        message.action = action
+        MDCSnackbarManager.show(message)
+    }
+    
     
     //MARK: - Selectors
     @objc private func handleBookmarksTapped() {
@@ -145,16 +144,9 @@ class SlideController: UISimpleSlidingTabController {
 //MARK: - ArticlesControllerDelegate
 extension SlideController: ArticlesControllerDelegate {
     func actionButtonDidSelect(url: String) {
-        didSelectActionButton({ (_) in
+        didSelectActionButton({ [weak self] (_) in
             print("Add to bookmarks...")
-            
-            let message = MDCSnackbarMessage()
-            message.text = "Added the article to Bookmark"
-            
-            let action = MDCSnackbarMessageAction()
-            action.title = "OK"
-            message.action = action
-            MDCSnackbarManager.show(message)
+            self?.showSnackBarMessage()
             
         }) { (_) in
             print("Share via...")

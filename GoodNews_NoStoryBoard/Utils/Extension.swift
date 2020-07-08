@@ -138,7 +138,7 @@ extension UIViewController {
         addArticleToBookmarks.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
         
         let shareArticle = UIAlertAction(title: "Share Article via...", style: .default, handler: shareArticle)
-        shareArticle.setValue(UIImage(named: "share"), forKey: "image")
+        shareArticle.setValue(UIImage(systemName: "arrowshape.turn.up.right"), forKey: "image")
         shareArticle.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
         
         let cancel = UIAlertAction(title: "Cancel", style: .default, handler: nil)

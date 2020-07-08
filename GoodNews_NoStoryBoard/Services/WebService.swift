@@ -63,7 +63,7 @@ struct WebService {
             sourceQuery = articleId != nil ?
                 (source.description + articleId!) :
                 (source.description.components(separatedBy: "sources=")[0] + "country=us")
-            print(sourceQuery)
+        
         case .everything:
             sourceQuery = searchKey != nil ?
                 (source.description + searchKey!) :
