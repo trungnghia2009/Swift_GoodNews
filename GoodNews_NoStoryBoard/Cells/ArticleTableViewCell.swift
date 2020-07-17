@@ -10,6 +10,7 @@ import UIKit
 
 protocol ArticleTableViewCellDelegate: class {
     func actionButtonDidSelect(cell: ArticleTableViewCell)
+    func favoriteButtonDidSelect(cell: ArticleTableViewCell)
 }
 
 class ArticleTableViewCell: UITableViewCell {
@@ -21,6 +22,21 @@ class ArticleTableViewCell: UITableViewCell {
     var articleVM: ArticleViewModel? {
         didSet { configure() }
     }
+    
+    var articleStorage: ArticleStorage? {
+        didSet {configureArticelStorageCell() }
+    }
+    
+    lazy var isFavorite: Bool = {
+        guard let articleStorage = articleStorage else { return false}
+        return articleStorage.isFavorite
+    }()
+    
+    private let orderLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 14)
+        return label
+    }()
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -77,8 +93,18 @@ class ArticleTableViewCell: UITableViewCell {
         button.imageView?.contentMode = .scaleAspectFit
         button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -60, bottom: 0, right: 0)
         button.tintColor = .label
-        button.setDimensions(height: 20, width: 80)
+        button.setDimensions(height: 18, width: 80)
         button.addTarget(self, action: #selector(handleBookmarkButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var favoriteButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -60, bottom: 0, right: 0)
+        button.setDimensions(height: 20, width: 80)
+        button.isHidden = true
+        button.addTarget(self, action: #selector(handleFavoriteButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -87,7 +113,8 @@ class ArticleTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        let infoStack = UIStackView(arrangedSubviews: [sourceLabel, authorLabel, dateLabel, actionButton])
+        // Image and info stack
+        let infoStack = UIStackView(arrangedSubviews: [sourceLabel, authorLabel, dateLabel, favoriteButton])
         infoStack.spacing = 8
         infoStack.axis = .vertical
         infoStack.alignment = .leading
@@ -97,7 +124,13 @@ class ArticleTableViewCell: UITableViewCell {
         imageInfoStack.axis = .horizontal
         imageInfoStack.alignment = .center
         
-        let stack = UIStackView(arrangedSubviews: [titleLabel, imageInfoStack, descriptionLabel])
+        // Action stack
+        let actionStack = UIStackView(arrangedSubviews: [orderLabel, actionButton])
+        actionStack.spacing = 8
+        actionStack.alignment = .leading
+        
+        // Main stack
+        let stack = UIStackView(arrangedSubviews: [actionStack, titleLabel, imageInfoStack, descriptionLabel])
         stack.alignment = .leading
         stack.spacing = 8
         stack.axis = .vertical
@@ -117,6 +150,16 @@ class ArticleTableViewCell: UITableViewCell {
     //MARK: - Selector
     @objc private func handleBookmarkButtonTapped() {
         delegate?.actionButtonDidSelect(cell: self)
+    }
+    
+    @objc private func handleFavoriteButtonTapped() {
+        isFavorite.toggle()
+        if isFavorite {
+            favoriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+        } else {
+            favoriteButton.setImage(UIImage(systemName: "star"), for: .normal)
+        }
+        delegate?.favoriteButtonDidSelect(cell: self)
     }
     
     
@@ -143,7 +186,7 @@ class ArticleTableViewCell: UITableViewCell {
                     }
                     
                     DispatchQueue.main.async {
-                        let image = UIImage(data: imageData)
+                        let image = UIImage(data: imageData)?.resizeWithWidth(width: 300)
                         self.articleImage.image = image
                         self.imageCache.setObject(image!, forKey: url.absoluteString as NSString)
 
@@ -158,6 +201,9 @@ class ArticleTableViewCell: UITableViewCell {
     
     private func configure() {
         guard let articleVM = articleVM else { return }
+        if let order = articleVM.order {
+            orderLabel.text = "#\(order)"
+        }
         titleLabel.text = articleVM.title
         descriptionLabel.text = articleVM.description
         authorLabel.text = articleVM.author
@@ -166,13 +212,22 @@ class ArticleTableViewCell: UITableViewCell {
         configureArticleImage(url: articleVM.urlToImage)
     }
     
-    func configureBookmarkCell(article: ArticleStorage) {
+    func configureArticelStorageCell() {
+        guard let article = articleStorage else { return }
         actionButton.isHidden = true
+        favoriteButton.isHidden = false
         titleLabel.text = article.title
         descriptionLabel.text = article.description
         authorLabel.text = article.author
         dateLabel.text = article.publishedAt
         sourceLabel.text = article.sourceName
+        
+        
+        if article.isFavorite {
+            favoriteButton.setImage(UIImage(systemName: "star.fill"), for: .normal)
+        } else {
+            favoriteButton.setImage(UIImage(systemName: "star"), for: .normal)
+        }
         
         if let data = article.imageData {
             articleImage.image = UIImage(data: data)

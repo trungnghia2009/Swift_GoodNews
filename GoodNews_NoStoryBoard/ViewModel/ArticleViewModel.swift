@@ -28,10 +28,12 @@ struct ArticleListViewModel {
 
 struct ArticleViewModel {
     private let article: Article
+    var order: Int?
     
     init(_ article: Article) {
         self.article = article
     }
+    
     
     var title: String {
         return article.title ?? "No Title"

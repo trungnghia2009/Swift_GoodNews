@@ -103,6 +103,7 @@ extension GenresController {
     }
 }
 
+// MARK: - UISearchResultsUpdating
 extension GenresController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         guard let searchText = searchController.searchBar.text else { return }
@@ -112,3 +113,4 @@ extension GenresController: UISearchResultsUpdating {
     
     
 }
+

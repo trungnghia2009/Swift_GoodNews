@@ -18,6 +18,8 @@ struct ArticleStorage: Codable {
     let url: String
     
     let createdDate: Date
+    var isFavorite: Bool = false
+    
     
     
 }

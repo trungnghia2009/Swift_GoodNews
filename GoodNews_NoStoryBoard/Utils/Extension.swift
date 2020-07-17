@@ -193,3 +193,36 @@ extension UIApplication {
         _share(data, applicationActivities: applicationActivities, setupViewControllerCompletion: setupViewControllerCompletion)
     }
 }
+
+extension UIImage {
+    
+    func resizeWithWidth(width: CGFloat) -> UIImage? {
+        let imageView = UIImageView(frame: CGRect(origin: .zero, size: CGSize(width: width, height: CGFloat(ceil(width/size.width * size.height)))))
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = self
+        UIGraphicsBeginImageContextWithOptions(imageView.bounds.size, false, scale)
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        imageView.layer.render(in: context)
+        guard let result = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
+        UIGraphicsEndImageContext()
+        return result
+    }
+}
+
+extension UITableView {
+    func setEmptyMessage(_ message: String) {
+        let messageLabel = UILabel(frame: CGRect(x: 0, y: 0, width: self.bounds.size.width, height: self.bounds.size.height))
+        messageLabel.text = message
+        messageLabel.textColor = .lightGray
+        messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .center
+        messageLabel.font = UIFont.systemFont(ofSize: 16.0, weight: UIFont.Weight.medium)
+        messageLabel.sizeToFit()
+
+        self.backgroundView = messageLabel
+    }
+
+    func restore() {
+        self.backgroundView = nil
+    }
+}

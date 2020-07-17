@@ -22,7 +22,7 @@ class SlideController: UISimpleSlidingTabController {
     private let imageCache = SingletonConstant.shared.imageCache
     private var articleStorages = [ArticleStorage]()
     
-    private let bookmarksButton: UIButton = {
+    private let bookmarkButton: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .white
         button.backgroundColor = .systemBlue
@@ -46,8 +46,8 @@ class SlideController: UISimpleSlidingTabController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         build()
-        view.addSubview(bookmarksButton)
-        bookmarksButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor,
+        view.addSubview(bookmarkButton)
+        bookmarkButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor,
                              paddingBottom: 60, paddingRight: 20)
         
         print("Subview...")
@@ -75,7 +75,7 @@ class SlideController: UISimpleSlidingTabController {
     
     //MARK: - Helpers
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         firstItem.delegate = self
         secondItem.delegate = self
         
@@ -106,7 +106,7 @@ class SlideController: UISimpleSlidingTabController {
         }
     }
     
-    private func loadData() {
+    private func loadStorageData() {
         do {
             if let data = try? Data(contentsOf: dataFilePath!) {
                 let decoder = PropertyListDecoder()
@@ -131,6 +131,7 @@ class SlideController: UISimpleSlidingTabController {
     //MARK: - Selectors
     @objc private func handleBookmarksTapped() {
         let controller = BookmarksController()
+        controller.delegate = self
         navigationController?.pushViewController(controller, animated: true)
     }
     
@@ -152,12 +153,12 @@ class SlideController: UISimpleSlidingTabController {
             var textField = UITextField()
             let alert = UIAlertController(title: "", message: "Please enter keyword", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "CANCEL", style: .default, handler: nil))
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [unowned self] (_) in
                 self.secondItem.searchKey = textField.text
                 self.secondItem.fetchArticles()
             }))
             alert.addTextField { (alertTextField) in
-                alertTextField.placeholder = "Search..."
+                alertTextField.placeholder = "Search for keyword..."
                 textField = alertTextField
             }
             
@@ -170,18 +171,30 @@ class SlideController: UISimpleSlidingTabController {
 
 //MARK: - ArticlesControllerDelegate
 extension SlideController: ArticlesControllerDelegate {
+    
+    func favoriteButtonDidSelect(cell: ArticleTableViewCell) {
+        print("ABC/......")
+        print(cell.isFavorite)
+        for (index, article) in articleStorages.enumerated() {
+            if article.publishedAt == cell.articleVM?.publishedAt {
+                articleStorages[index].isFavorite = cell.isFavorite
+                saveData()
+                break
+            }
+        }
+    }
+    
     func actionButtonDidSelect(cell: ArticleTableViewCell) {
         guard let articleVM = cell.articleVM else { return }
         
-        didSelectActionButton({ [weak self] (_) in
-            guard let this = self else { return }
-            
+        didSelectActionButton({ [unowned self] (_) in
+           
             var isNewArticle = true
-            this.loadData()
+            self.loadStorageData()
             
-            for article in this.articleStorages {
+            for article in self.articleStorages {
                 if article.publishedAt == articleVM.publishedAt {
-                    this.showSnackBarMessage(text: "This article was added to Bookmarks")
+                    self.showSnackBarMessage(text: "This article was added to Bookmarks")
                     isNewArticle = false
                     break
                 }
@@ -191,7 +204,7 @@ extension SlideController: ArticlesControllerDelegate {
                 var imageData: Data?
                 
                 if let urlToImage = articleVM.urlToImage,
-                    let cachedImage = this.imageCache.object(forKey: urlToImage as NSString) as? UIImage {
+                    let cachedImage = self.imageCache.object(forKey: urlToImage as NSString) as? UIImage {
                     imageData = cachedImage.jpegData(compressionQuality: 0.3)
                 }
                 
@@ -203,9 +216,9 @@ extension SlideController: ArticlesControllerDelegate {
                                                     imageData: imageData,
                                                     url: articleVM.url,
                                                     createdDate: Date())
-                this.articleStorages.append(articleStorage)
-                this.saveData()
-                this.showSnackBarMessage(text: "Added the article to Bookmark")
+                self.articleStorages.append(articleStorage)
+                self.saveData()
+                self.showSnackBarMessage(text: "Added the article to Bookmark")
             }
             
         }) { (_) in
@@ -230,5 +243,21 @@ extension SlideController: GenresControllerDelegate {
         firstItem.articleId = id
         firstItem.fetchArticles()
     }
+    
+}
+
+// MARK: - BookmarksControllerDelegate
+extension SlideController: BookmarksControllerDelegate {
+    func favoriteDidSelect(cell: ArticleTableViewCell) {
+        loadStorageData()
+        for (index, article) in articleStorages.enumerated() {
+            if article.publishedAt == cell.articleStorage?.publishedAt {
+                articleStorages[index].isFavorite = cell.isFavorite
+                saveData()
+                break
+            }
+        }
+    }
+    
     
 }

@@ -24,6 +24,8 @@ class ArticlesController: UITableViewController {
     private var articleListVM: ArticleListViewModel!
     private let refreshController = UIRefreshControl()
     
+    private var orderList = [Int]()
+    
     //MARK: - Lifecycle
     init(source: SourceType) {
         self.source = source
@@ -46,15 +48,23 @@ class ArticlesController: UITableViewController {
     //MARK: - APIs
     func fetchArticles() {
         tableView.refreshControl?.beginRefreshing()
-        WebService.shared.fetchData(fromSource: source, withArticleId: articleId, withSearchKey: searchKey, expectingReturnType: ArticleList.self) { [weak self] (result) in
+        WebService.shared.fetchData(fromSource: source, withArticleId: articleId, withSearchKey: searchKey, expectingReturnType: ArticleList.self) { [unowned self] (result) in
             switch result {
                 
             case .success(let articleList):
                 let articles = articleList.articles.sorted { $0.publishedAt > $1.publishedAt }
-                self?.articleListVM = ArticleListViewModel(articles: articles)
+                var number = 0
+                // Add orderList
+                articles.forEach { (article) in
+                    number += 1
+                    let order = number
+                    self.orderList.append(order)
+                }
+                
+                self.articleListVM = ArticleListViewModel(articles: articles)
                 DispatchQueue.main.async {
-                    self?.tableView.reloadData()
-                    self?.tableView.refreshControl?.endRefreshing()
+                    self.tableView.reloadData()
+                    self.tableView.refreshControl?.endRefreshing()
                 }
             case .failure(let error):
                 print("Error fetching articles, ", error.localizedDescription)
@@ -100,7 +110,11 @@ extension ArticlesController {
         let cell = tableView.dequeueReusableCell(withIdentifier: ArticleTableViewCell.reuseIdentifier, for: indexPath) as! ArticleTableViewCell
         cell.delegate = self
         cell.articleImage.image = nil
-        let articleVM = articleListVM.articleAtIndex(indexPath.row)
+        
+        var articleVM = articleListVM.articleAtIndex(indexPath.row)
+        let order = orderList[indexPath.row]
+        articleVM.order = order
+        
         cell.articleVM = articleVM
         return cell
     }
@@ -118,6 +132,9 @@ extension ArticlesController {
 
 //MARK: - ArticleTableViewCellDelegate
 extension ArticlesController: ArticleTableViewCellDelegate {
+    func favoriteButtonDidSelect(cell: ArticleTableViewCell) {
+    }
+    
     func actionButtonDidSelect(cell: ArticleTableViewCell) {
         delegate?.actionButtonDidSelect(cell: cell)
     }
