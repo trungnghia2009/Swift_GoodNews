@@ -11,7 +11,7 @@ import SafariServices
 
 protocol ArticlesControllerDelegate: class {
     func navigateToArticleDetail(urlString: String)
-    func actionButtonDidSelect(url: String)
+    func actionButtonDidSelect(cell: ArticleTableViewCell)
 }
 
 class ArticlesController: UITableViewController {
@@ -118,8 +118,10 @@ extension ArticlesController {
 
 //MARK: - ArticleTableViewCellDelegate
 extension ArticlesController: ArticleTableViewCellDelegate {
-    func actionButtonDidSelect(url: String) {
-        delegate?.actionButtonDidSelect(url: url)
+    func actionButtonDidSelect(cell: ArticleTableViewCell) {
+        delegate?.actionButtonDidSelect(cell: cell)
     }
+    
+    
     
 }

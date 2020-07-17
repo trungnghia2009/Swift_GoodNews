@@ -9,15 +9,15 @@
 import UIKit
 
 protocol ArticleTableViewCellDelegate: class {
-    func actionButtonDidSelect(url: String)
+    func actionButtonDidSelect(cell: ArticleTableViewCell)
 }
 
 class ArticleTableViewCell: UITableViewCell {
     
     //MARK: - Properties
-    weak var delegate: ArticleTableViewCellDelegate?
     static let reuseIdentifier = String(describing: ArticleTableViewCell.self)
-    let imageCache = CacheService.shared.imageCache
+    weak var delegate: ArticleTableViewCellDelegate?
+    let imageCache = SingletonConstant.shared.imageCache
     var articleVM: ArticleViewModel? {
         didSet { configure() }
     }
@@ -116,20 +116,13 @@ class ArticleTableViewCell: UITableViewCell {
     
     //MARK: - Selector
     @objc private func handleBookmarkButtonTapped() {
-        guard let articleVM = articleVM else { return }
-        delegate?.actionButtonDidSelect(url: articleVM.url)
+        delegate?.actionButtonDidSelect(cell: self)
     }
     
+    
     //MARK: - Helpers
-    private func configure() {
-        guard let articleVM = articleVM else { return }
-        titleLabel.text = articleVM.title
-        descriptionLabel.text = articleVM.description
-        authorLabel.text = articleVM.author
-        dateLabel.text = articleVM.publishedAt
-        sourceLabel.text = articleVM.sourceName
-        
-        if let imageString = articleVM.urlToImage,
+    private func configureArticleImage(url: String?) {
+        if let imageString = url,
             let url = URL(string: imageString) {
 
             if let cachedImage = imageCache.object(forKey: url.absoluteString as NSString) as? UIImage {
@@ -148,8 +141,7 @@ class ArticleTableViewCell: UITableViewCell {
                         else {
                             return
                     }
-
-
+                    
                     DispatchQueue.main.async {
                         let image = UIImage(data: imageData)
                         self.articleImage.image = image
@@ -160,7 +152,31 @@ class ArticleTableViewCell: UITableViewCell {
 
             }
         } else {
-            print("Debug: ABC")
+            articleImage.image = #imageLiteral(resourceName: "placeholder")
+        }
+    }
+    
+    private func configure() {
+        guard let articleVM = articleVM else { return }
+        titleLabel.text = articleVM.title
+        descriptionLabel.text = articleVM.description
+        authorLabel.text = articleVM.author
+        dateLabel.text = articleVM.publishedAt
+        sourceLabel.text = articleVM.sourceName
+        configureArticleImage(url: articleVM.urlToImage)
+    }
+    
+    func configureBookmarkCell(article: ArticleStorage) {
+        actionButton.isHidden = true
+        titleLabel.text = article.title
+        descriptionLabel.text = article.description
+        authorLabel.text = article.author
+        dateLabel.text = article.publishedAt
+        sourceLabel.text = article.sourceName
+        
+        if let data = article.imageData {
+            articleImage.image = UIImage(data: data)
+        } else {
             articleImage.image = #imageLiteral(resourceName: "placeholder")
         }
         

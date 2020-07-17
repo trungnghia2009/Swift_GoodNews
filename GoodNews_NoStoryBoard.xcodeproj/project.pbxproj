@@ -14,6 +14,7 @@
 		2C82BBBA24AF3B8200E5DE92 /* SourceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82BBB924AF3B8200E5DE92 /* SourceController.swift */; };
 		2C82BBBC24AF3E6200E5DE92 /* SourceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82BBBB24AF3E6200E5DE92 /* SourceTableViewCell.swift */; };
 		2C82BBBE24AF401F00E5DE92 /* ArticleSourceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C82BBBD24AF401F00E5DE92 /* ArticleSourceViewModel.swift */; };
+		2C99A98D24B5C38F00B64ED5 /* ArticleStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C99A98C24B5C38F00B64ED5 /* ArticleStorage.swift */; };
 		2C9EFD7024B369BB007FC501 /* BookmarksController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C9EFD6F24B369BB007FC501 /* BookmarksController.swift */; };
 		2CD1846524AC7881004EEEFC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1846424AC7881004EEEFC /* AppDelegate.swift */; };
 		2CD1846724AC7881004EEEFC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1846624AC7881004EEEFC /* SceneDelegate.swift */; };
@@ -26,7 +27,7 @@
 		2CD1848724AC7B6C004EEEFC /* ArticleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1848624AC7B6C004EEEFC /* ArticleTableViewCell.swift */; };
 		2CD1848924AC80E5004EEEFC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CD1848824AC80E5004EEEFC /* Main.storyboard */; };
 		2CD1848B24AC812A004EEEFC /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1848A24AC812A004EEEFC /* Extension.swift */; };
-		2CE3974524ACF413003006FE /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE3974424ACF413003006FE /* CacheService.swift */; };
+		2CE3974524ACF413003006FE /* SingletonConstant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE3974424ACF413003006FE /* SingletonConstant.swift */; };
 		2CE6044924B214DA001960F8 /* GenresController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6044824B214DA001960F8 /* GenresController.swift */; };
 		5BD179C9838432FCF29E062A /* Pods_GoodNews_NoStoryBoard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AFE25E7BD933B76FA9AF740F /* Pods_GoodNews_NoStoryBoard.framework */; };
 /* End PBXBuildFile section */
@@ -39,6 +40,7 @@
 		2C82BBB924AF3B8200E5DE92 /* SourceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceController.swift; sourceTree = "<group>"; };
 		2C82BBBB24AF3E6200E5DE92 /* SourceTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceTableViewCell.swift; sourceTree = "<group>"; };
 		2C82BBBD24AF401F00E5DE92 /* ArticleSourceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleSourceViewModel.swift; sourceTree = "<group>"; };
+		2C99A98C24B5C38F00B64ED5 /* ArticleStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleStorage.swift; sourceTree = "<group>"; };
 		2C9EFD6F24B369BB007FC501 /* BookmarksController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksController.swift; sourceTree = "<group>"; };
 		2CD1846124AC7881004EEEFC /* GoodNews_NoStoryBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoodNews_NoStoryBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CD1846424AC7881004EEEFC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -53,7 +55,7 @@
 		2CD1848624AC7B6C004EEEFC /* ArticleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleTableViewCell.swift; sourceTree = "<group>"; };
 		2CD1848824AC80E5004EEEFC /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		2CD1848A24AC812A004EEEFC /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
-		2CE3974424ACF413003006FE /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
+		2CE3974424ACF413003006FE /* SingletonConstant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingletonConstant.swift; sourceTree = "<group>"; };
 		2CE6044824B214DA001960F8 /* GenresController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenresController.swift; sourceTree = "<group>"; };
 		2FE8A8A17FDF6390D05D0B11 /* Pods-GoodNews_NoStoryBoard.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoodNews_NoStoryBoard.release.xcconfig"; path = "Target Support Files/Pods-GoodNews_NoStoryBoard/Pods-GoodNews_NoStoryBoard.release.xcconfig"; sourceTree = "<group>"; };
 		80B454CFA0A41A447DB9EBC8 /* Pods-GoodNews_NoStoryBoard.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoodNews_NoStoryBoard.debug.xcconfig"; path = "Target Support Files/Pods-GoodNews_NoStoryBoard/Pods-GoodNews_NoStoryBoard.debug.xcconfig"; sourceTree = "<group>"; };
@@ -131,7 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				2CD1848024AC7B30004EEEFC /* WebService.swift */,
-				2CE3974424ACF413003006FE /* CacheService.swift */,
+				2CE3974424ACF413003006FE /* SingletonConstant.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -150,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				2CD1848224AC7B44004EEEFC /* Article.swift */,
+				2C99A98C24B5C38F00B64ED5 /* ArticleStorage.swift */,
 				2C82BBB724AF35AB00E5DE92 /* ActicleSource.swift */,
 			);
 			path = Model;
@@ -329,7 +332,8 @@
 				2CD1848724AC7B6C004EEEFC /* ArticleTableViewCell.swift in Sources */,
 				2C82BBB124AED5E300E5DE92 /* HeaderCell.swift in Sources */,
 				2CD1848324AC7B44004EEEFC /* Article.swift in Sources */,
-				2CE3974524ACF413003006FE /* CacheService.swift in Sources */,
+				2CE3974524ACF413003006FE /* SingletonConstant.swift in Sources */,
+				2C99A98D24B5C38F00B64ED5 /* ArticleStorage.swift in Sources */,
 				2C82BBBE24AF401F00E5DE92 /* ArticleSourceViewModel.swift in Sources */,
 				2CD1848B24AC812A004EEEFC /* Extension.swift in Sources */,
 				2C82BBB824AF35AB00E5DE92 /* ActicleSource.swift in Sources */,

@@ -18,6 +18,10 @@ class SlideController: UISimpleSlidingTabController {
     var sources = [ArticleSource]()
     var sourceFilter = [ArticleSource(id: "all", name: "All", description: "", url: "")]
     
+    private let dataFilePath = SingletonConstant.shared.dataFilePath
+    private let imageCache = SingletonConstant.shared.imageCache
+    private var articleStorages = [ArticleStorage]()
+    
     private let bookmarksButton: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .white
@@ -34,9 +38,9 @@ class SlideController: UISimpleSlidingTabController {
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setRotation()
         setupUI()
         fetchSources()
-        
     }
     
     override func viewWillLayoutSubviews() {
@@ -92,9 +96,30 @@ class SlideController: UISimpleSlidingTabController {
         setCurrentPosition(position: 0)
     }
     
-    private func showSnackBarMessage() {
+    private func saveData() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(articleStorages)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item array, \(error.localizedDescription)")
+        }
+    }
+    
+    private func loadData() {
+        do {
+            if let data = try? Data(contentsOf: dataFilePath!) {
+                let decoder = PropertyListDecoder()
+                articleStorages = try decoder.decode([ArticleStorage].self, from: data)
+            }
+        } catch {
+            print("Error encoding item array, \(error.localizedDescription)")
+        }
+    }
+    
+    private func showSnackBarMessage(text: String) {
         let message = MDCSnackbarMessage()
-        message.text = "Added the article to Bookmark"
+        message.text = text
         
         let action = MDCSnackbarMessageAction()
         action.title = "OK"
@@ -139,18 +164,53 @@ class SlideController: UISimpleSlidingTabController {
             present(alert, animated: true, completion: nil)
         }
     }
+    
+    
 }
 
 //MARK: - ArticlesControllerDelegate
 extension SlideController: ArticlesControllerDelegate {
-    func actionButtonDidSelect(url: String) {
+    func actionButtonDidSelect(cell: ArticleTableViewCell) {
+        guard let articleVM = cell.articleVM else { return }
+        
         didSelectActionButton({ [weak self] (_) in
-            print("Add to bookmarks...")
-            self?.showSnackBarMessage()
+            guard let this = self else { return }
+            
+            var isNewArticle = true
+            this.loadData()
+            
+            for article in this.articleStorages {
+                if article.publishedAt == articleVM.publishedAt {
+                    this.showSnackBarMessage(text: "This article was added to Bookmarks")
+                    isNewArticle = false
+                    break
+                }
+            }
+            
+            if isNewArticle {
+                var imageData: Data?
+                
+                if let urlToImage = articleVM.urlToImage,
+                    let cachedImage = this.imageCache.object(forKey: urlToImage as NSString) as? UIImage {
+                    imageData = cachedImage.jpegData(compressionQuality: 0.3)
+                }
+                
+                let articleStorage = ArticleStorage(title: articleVM.title,
+                                                    description: articleVM.description,
+                                                    author: articleVM.author,
+                                                    publishedAt: articleVM.publishedAt,
+                                                    sourceName: articleVM.sourceName,
+                                                    imageData: imageData,
+                                                    url: articleVM.url,
+                                                    createdDate: Date())
+                this.articleStorages.append(articleStorage)
+                this.saveData()
+                this.showSnackBarMessage(text: "Added the article to Bookmark")
+            }
             
         }) { (_) in
             print("Share via...")
-            UIApplication.share(url)
+            UIApplication.share(articleVM.url)
         }
     }
     
@@ -166,11 +226,9 @@ extension SlideController: ArticlesControllerDelegate {
 //MARK: - GenresControllerDelegate
 extension SlideController: GenresControllerDelegate {
     func articleDidSelect(_ id: String) {
-        print("Debug: \(id)")
         //CacheService.shared.imageCache.removeAllObjects()
         firstItem.articleId = id
         firstItem.fetchArticles()
     }
-    
     
 }

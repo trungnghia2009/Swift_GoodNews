@@ -22,6 +22,23 @@ class UISimpleSlidingTabController: UIViewController {
     private var currentPosition = 0
     private let heightHeader: CGFloat = 40
     
+    // Need to improve here-------
+    private var width: CGFloat = 0
+    func setRotation() {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleRotation), name: UIDevice.orientationDidChangeNotification, object: nil)
+    }
+    
+    @objc func handleRotation() {
+        if UIDevice.current.orientation.isLandscape {
+            print("Landscape")
+        }
+
+        if UIDevice.current.orientation.isPortrait {
+            print("Portrait")
+        }
+    }
+    //--------------------
+    
     private let headerUnderlineView: UIView = {
         let view = UIView()
         return view
@@ -69,7 +86,7 @@ class UISimpleSlidingTabController: UIViewController {
     }
     
     func build(){
-
+        
         // collectionHeader
         view.addSubview(collectionHeader)
         collectionHeader.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor)
@@ -94,7 +111,7 @@ class UISimpleSlidingTabController: UIViewController {
         headerUnderlineView.setWidth(width:  view.frame.width / CGFloat(items.count))
         headerUnderlineView.backgroundColor = colorHeaderActive
         DispatchQueue.main.async {
-            let xPosition = self.view.frame.width - (self.view.frame.width / CGFloat(self.currentPosition + 1))
+            let xPosition = self.view.frame.width - (self.view.bounds.width / CGFloat(self.currentPosition + 1))
             self.headerUnderlineView.frame.origin.x = xPosition
         }
         collectionHeader.reloadData()
@@ -134,8 +151,8 @@ extension UISimpleSlidingTabController: UICollectionViewDelegate{
         
         if currentIndex >= 0 && currentIndex <= CGFloat(items.count - 1)  {
             headerUnderlineView.frame.origin.x = (currentIndex * view.frame.width) / CGFloat((items.count))
-//            currentPosition = Int(currentIndex.rounded())
-//            collectionHeader.reloadData()
+            currentPosition = Int(currentIndex.rounded())
+            collectionHeader.reloadData()
         }
         
     }
