@@ -12,6 +12,8 @@ import SafariServices
 protocol ArticlesControllerDelegate: class {
     func navigateToArticleDetail(urlString: String)
     func actionButtonDidSelect(cell: ArticleTableViewCell)
+    func shareContextMenuDidSelect(articleVM: ArticleViewModel)
+    func bookmarkContextMenuDidSelect(articleVM: ArticleViewModel)
 }
 
 class ArticlesController: UITableViewController {
@@ -128,6 +130,40 @@ extension ArticlesController {
         let selectedArticle = articleListVM.articles[indexPath.row]
         delegate?.navigateToArticleDetail(urlString: selectedArticle.url)
     }
+    
+    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let index = indexPath.row
+        let identifier = "\(index)" as NSString
+        let selectedArticle = articleListVM.articles[index]
+        let articleMV = ArticleViewModel(selectedArticle)
+        
+        let contextMenu = UIContextMenuConfiguration(identifier: identifier, previewProvider: nil) { [unowned self] (_) -> UIMenu? in
+            
+            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { (_) in
+                self.delegate?.shareContextMenuDidSelect(articleVM: articleMV)
+            }
+            
+            let bookmarkAction = UIAction(title: "Bookmark", image: UIImage(systemName: "bookmark")) { (_) in
+                self.delegate?.bookmarkContextMenuDidSelect(articleVM: articleMV)
+            }
+            
+            return UIMenu.init(title: "", children: [shareAction, bookmarkAction])
+        }
+        
+        return contextMenu
+    }
+    
+    // Perform preview action
+    override func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        
+        guard let identifier = configuration.identifier as? String,
+            let index = Int(identifier) else { return }
+        
+        let selectedArticle = articleListVM.articles[index]
+        delegate?.navigateToArticleDetail(urlString: selectedArticle.url)
+    }
+    
+    
 }
 
 //MARK: - ArticleTableViewCellDelegate

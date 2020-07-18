@@ -22,23 +22,6 @@ class UISimpleSlidingTabController: UIViewController {
     private var currentPosition = 0
     private let heightHeader: CGFloat = 40
     
-    // Need to improve here-------
-    private var width: CGFloat = 0
-    func setRotation() {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleRotation), name: UIDevice.orientationDidChangeNotification, object: nil)
-    }
-    
-    @objc func handleRotation() {
-        if UIDevice.current.orientation.isLandscape {
-            print("Landscape")
-        }
-
-        if UIDevice.current.orientation.isPortrait {
-            print("Portrait")
-        }
-    }
-    //--------------------
-    
     private let headerUnderlineView: UIView = {
         let view = UIView()
         return view

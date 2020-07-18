@@ -21,6 +21,7 @@ class SlideController: UISimpleSlidingTabController {
     private let dataFilePath = SingletonConstant.shared.dataFilePath
     private let imageCache = SingletonConstant.shared.imageCache
     private var articleStorages = [ArticleStorage]()
+    private var textField = UITextField()
     
     private let bookmarkButton: UIButton = {
         let button = UIButton(type: .system)
@@ -38,7 +39,6 @@ class SlideController: UISimpleSlidingTabController {
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setRotation()
         setupUI()
         fetchSources()
     }
@@ -117,6 +117,12 @@ class SlideController: UISimpleSlidingTabController {
         }
     }
     
+    private func handleKeyworkSearch() {
+        guard textField.text != "" else { return }
+        secondItem.searchKey = textField.text
+        secondItem.fetchArticles()
+    }
+    
     private func showSnackBarMessage(text: String) {
         let message = MDCSnackbarMessage()
         message.text = text
@@ -125,6 +131,40 @@ class SlideController: UISimpleSlidingTabController {
         action.title = "OK"
         message.action = action
         MDCSnackbarManager.show(message)
+    }
+    
+    private func addArticleToBookmarks(articleVM: ArticleViewModel) {
+        var isNewArticle = true
+        self.loadStorageData()
+        
+        for article in self.articleStorages {
+            if article.publishedAt == articleVM.publishedAt {
+                self.showSnackBarMessage(text: "This article was added to Bookmarks")
+                isNewArticle = false
+                break
+            }
+        }
+        
+        if isNewArticle {
+            var imageData: Data?
+            
+            if let urlToImage = articleVM.urlToImage,
+                let cachedImage = self.imageCache.object(forKey: urlToImage as NSString) as? UIImage {
+                imageData = cachedImage.jpegData(compressionQuality: 0.3)
+            }
+            
+            let articleStorage = ArticleStorage(title: articleVM.title,
+                                                description: articleVM.description,
+                                                author: articleVM.author,
+                                                publishedAt: articleVM.publishedAt,
+                                                sourceName: articleVM.sourceName,
+                                                imageData: imageData,
+                                                url: articleVM.url,
+                                                createdDate: Date())
+            self.articleStorages.append(articleStorage)
+            self.saveData()
+            self.showSnackBarMessage(text: "Added the article to Bookmark")
+        }
     }
     
     
@@ -150,16 +190,15 @@ class SlideController: UISimpleSlidingTabController {
             present(nav, animated: true, completion: nil)
         default:
             print("Show genres 1")
-            var textField = UITextField()
             let alert = UIAlertController(title: "", message: "Please enter keyword", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "CANCEL", style: .default, handler: nil))
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [unowned self] (_) in
-                self.secondItem.searchKey = textField.text
-                self.secondItem.fetchArticles()
+                self.handleKeyworkSearch()
             }))
-            alert.addTextField { (alertTextField) in
+            alert.addTextField { [unowned self] (alertTextField) in
+                alertTextField.delegate = self
                 alertTextField.placeholder = "Search for keyword..."
-                textField = alertTextField
+                self.textField = alertTextField
             }
             
             present(alert, animated: true, completion: nil)
@@ -171,6 +210,13 @@ class SlideController: UISimpleSlidingTabController {
 
 //MARK: - ArticlesControllerDelegate
 extension SlideController: ArticlesControllerDelegate {
+    func shareContextMenuDidSelect(articleVM: ArticleViewModel) {
+        UIApplication.share(articleVM.url)
+    }
+    
+    func bookmarkContextMenuDidSelect(articleVM: ArticleViewModel) {
+        addArticleToBookmarks(articleVM: articleVM)
+    }
     
     func favoriteButtonDidSelect(cell: ArticleTableViewCell) {
         print("ABC/......")
@@ -188,45 +234,13 @@ extension SlideController: ArticlesControllerDelegate {
         guard let articleVM = cell.articleVM else { return }
         
         didSelectActionButton({ [unowned self] (_) in
-           
-            var isNewArticle = true
-            self.loadStorageData()
-            
-            for article in self.articleStorages {
-                if article.publishedAt == articleVM.publishedAt {
-                    self.showSnackBarMessage(text: "This article was added to Bookmarks")
-                    isNewArticle = false
-                    break
-                }
-            }
-            
-            if isNewArticle {
-                var imageData: Data?
-                
-                if let urlToImage = articleVM.urlToImage,
-                    let cachedImage = self.imageCache.object(forKey: urlToImage as NSString) as? UIImage {
-                    imageData = cachedImage.jpegData(compressionQuality: 0.3)
-                }
-                
-                let articleStorage = ArticleStorage(title: articleVM.title,
-                                                    description: articleVM.description,
-                                                    author: articleVM.author,
-                                                    publishedAt: articleVM.publishedAt,
-                                                    sourceName: articleVM.sourceName,
-                                                    imageData: imageData,
-                                                    url: articleVM.url,
-                                                    createdDate: Date())
-                self.articleStorages.append(articleStorage)
-                self.saveData()
-                self.showSnackBarMessage(text: "Added the article to Bookmark")
-            }
+            self.addArticleToBookmarks(articleVM: articleVM)
             
         }) { (_) in
             print("Share via...")
             UIApplication.share(articleVM.url)
         }
     }
-    
     
     func navigateToArticleDetail(urlString: String) {
         guard let url = URL(string: urlString) else { return }
@@ -259,5 +273,14 @@ extension SlideController: BookmarksControllerDelegate {
         }
     }
     
-    
+}
+
+// MARK: - UITextFieldDelegate
+extension SlideController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        dismiss(animated: true) {[unowned self] in
+            self.handleKeyworkSearch()
+        }
+        return true
+    }
 }

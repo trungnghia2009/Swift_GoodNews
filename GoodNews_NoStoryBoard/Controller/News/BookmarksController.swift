@@ -127,20 +127,34 @@ extension BookmarksController {
     
     @available(iOS 13.0, *)
     override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let contextMenu = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [unowned self] (actions) -> UIMenu? in
-            let selectedArticle = self.articles[indexPath.row]
-            
-            let goWebViewAction = UIAction(title: "View this content", image: UIImage(systemName: "paperplane")) { (_) in
-                self.navigateToWebView(url: selectedArticle.url)
+        
+        let index = indexPath.row
+        let identifier = "\(index)" as NSString
+        let selectedArticle = self.articles[index]
+        
+        let contextMenu = UIContextMenuConfiguration(identifier: identifier, previewProvider: nil) { [unowned self] (actions) -> UIMenu? in
+            let goWebViewAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { (_) in
+                UIApplication.share(selectedArticle.url)
             }
-            
             let deleteAction = UIAction(title: "Remove", image: UIImage(systemName: "trash"), attributes: .destructive) { (_) in
                 self.articles.remove(at: indexPath.row)
                 self.saveData()
             }
-            return UIMenu.init(title: "Menu", options: .destructive, children: [goWebViewAction, deleteAction])
+            return UIMenu.init(title: "", options: .destructive, children: [goWebViewAction, deleteAction])
         }
         return contextMenu
+    }
+    
+    override func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        
+        guard let identifier = configuration.identifier as? String,
+            let index = Int(identifier) else { return }
+        
+        let selectedArticle = articles[index]
+        
+        animator.addCompletion {
+            self.navigateToWebView(url: selectedArticle.url)
+        }
     }
     
     
